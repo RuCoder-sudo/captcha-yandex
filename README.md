@@ -7,7 +7,7 @@
   <img src="assets/css/bannerus.png" alt="WP Captcha Yandex — WordPress Captcha Plugin">
 </p>
 
-## 🇷🇺 WP Captcha Yandex — Яндекс-капча для WordPress
+##WP Captcha Yandex — Яндекс-капча для WordPress
 
 **WP Captcha Yandex** — это лёгкий и эффективный плагин для WordPress, который защищает ваш сайт от спама и автоматических атак с помощью **Yandex SmartCaptcha**.
 
