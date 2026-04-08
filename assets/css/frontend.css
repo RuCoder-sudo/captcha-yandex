@@ -1,0 +1,16 @@
+.cy-captcha-container {
+    margin: 12px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.cy-widget {
+    min-height: 100px;
+}
+
+.cy-captcha-error {
+    color: #dc3232;
+    font-size: 13px;
+    margin-top: 4px;
+}

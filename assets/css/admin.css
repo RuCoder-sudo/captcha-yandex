@@ -1,0 +1,581 @@
+/* Captcha Yandex — Admin Panel Styles */
+
+.cy-wrap {
+    max-width: 1020px;
+    margin: 20px 20px 0 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.cy-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #1d2327;
+    margin-bottom: 16px;
+}
+
+.cy-logo {
+    font-size: 26px;
+    line-height: 1;
+}
+
+/* Tabs */
+.cy-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 0;
+}
+
+.cy-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #646970;
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    transition: color 0.15s, background 0.15s;
+    position: relative;
+    bottom: -2px;
+    background: transparent;
+}
+
+.cy-tab:hover {
+    color: #2271b1;
+    background: #f8f9fa;
+}
+
+.cy-tab--active {
+    color: #2271b1;
+    background: #fff;
+    border-color: #e0e0e0;
+    border-bottom-color: #fff;
+    font-weight: 600;
+}
+
+.cy-tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.cy-tab-badge--error {
+    background: #dc3232;
+    color: #fff;
+}
+
+/* Panel */
+.cy-panel {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    padding: 28px 32px;
+}
+
+/* Sections */
+.cy-section {
+    margin-bottom: 30px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.cy-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.cy-section h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d2327;
+    margin-top: 0;
+    margin-bottom: 6px;
+}
+
+.cy-desc {
+    color: #646970;
+    font-size: 13px;
+    margin-bottom: 16px;
+}
+
+/* Form table overrides */
+.cy-form-table th {
+    padding-left: 0;
+    font-weight: 500;
+    width: 240px;
+    vertical-align: top;
+    padding-top: 12px;
+}
+
+.cy-form-table td {
+    padding-left: 0;
+}
+
+.cy-input {
+    min-width: 380px;
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+}
+
+/* Status banner */
+.cy-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 8px;
+}
+
+.cy-status--ok {
+    background: #edfaef;
+    color: #177233;
+    border: 1px solid #c3eacc;
+}
+
+.cy-status--warn {
+    background: #fef8e7;
+    color: #916b00;
+    border: 1px solid #fce69a;
+}
+
+/* Summary list */
+.cy-summary {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 24px;
+}
+
+.cy-summary li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #3c434a;
+}
+
+.cy-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.cy-dot--on {
+    background: #2ea44f;
+}
+
+.cy-dot--off {
+    background: #c9c9c9;
+}
+
+/* Toggle switches */
+.cy-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: #3c434a;
+    user-select: none;
+}
+
+.cy-toggle input[type="checkbox"] {
+    display: none;
+}
+
+.cy-toggle__slider {
+    width: 38px;
+    height: 22px;
+    background: #c9c9c9;
+    border-radius: 11px;
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.cy-toggle__slider::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    transition: left 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.cy-toggle input[type="checkbox"]:checked + .cy-toggle__slider {
+    background: #2271b1;
+}
+
+.cy-toggle input[type="checkbox"]:checked + .cy-toggle__slider::after {
+    left: 19px;
+}
+
+/* Badges */
+.cy-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 12px;
+    vertical-align: middle;
+    margin-left: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.cy-badge--ok {
+    background: #edfaef;
+    color: #177233;
+}
+
+.cy-badge--warn {
+    background: #fef8e7;
+    color: #916b00;
+}
+
+/* Button */
+.cy-btn-save {
+    margin-top: 8px !important;
+}
+
+.cy-btn-clear {
+    color: #dc3232 !important;
+    border-color: #dc3232 !important;
+}
+
+.cy-btn-clear:hover {
+    background: #dc3232 !important;
+    color: #fff !important;
+}
+
+/* -----------------------------------------------------------------------
+ * Logs Tab
+ * -------------------------------------------------------------------- */
+
+.cy-logs-section {
+    padding-bottom: 0;
+}
+
+.cy-logs-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.cy-logs-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.cy-log-filters {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.cy-filter-btn {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    color: #646970;
+    background: #f0f0f1;
+    border: 1px solid #ddd;
+    transition: all 0.15s;
+}
+
+.cy-filter-btn:hover {
+    background: #e0e0e0;
+    color: #1d2327;
+}
+
+.cy-filter-btn--active {
+    font-weight: 700;
+}
+
+.cy-filter-btn--error        { color: #dc3232; border-color: #dc3232; }
+.cy-filter-btn--error.cy-filter-btn--active  { background: #dc3232; color: #fff; }
+
+.cy-filter-btn--warn         { color: #9a6700; border-color: #f0b849; }
+.cy-filter-btn--warn.cy-filter-btn--active   { background: #f0b849; color: #3a2800; }
+
+.cy-filter-btn--success      { color: #177233; border-color: #2ea44f; }
+.cy-filter-btn--success.cy-filter-btn--active { background: #2ea44f; color: #fff; }
+
+.cy-filter-btn--info         { color: #2271b1; border-color: #2271b1; }
+.cy-filter-btn--info.cy-filter-btn--active   { background: #2271b1; color: #fff; }
+
+/* Log Table */
+.cy-log-table-wrap {
+    overflow-x: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+}
+
+.cy-log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.cy-log-table thead tr {
+    background: #f8f9fa;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.cy-log-table th {
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    color: #646970;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+.cy-log-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: top;
+}
+
+.cy-log-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.cy-log-table tbody tr:hover {
+    background: #fafafa;
+}
+
+/* Row highlight by type */
+.cy-log-row--error   { border-left: 3px solid #dc3232; }
+.cy-log-row--warning { border-left: 3px solid #f0b849; }
+.cy-log-row--success { border-left: 3px solid #2ea44f; }
+.cy-log-row--info    { border-left: 3px solid #2271b1; }
+
+/* Type badge */
+.cy-log-type {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.cy-log-type--error   { background: #fdecea; color: #dc3232; }
+.cy-log-type--warning { background: #fef8e7; color: #9a6700; }
+.cy-log-type--success { background: #edfaef; color: #177233; }
+.cy-log-type--info    { background: #e8f0fb; color: #2271b1; }
+
+/* Time, IP */
+.cy-log-time {
+    font-family: "Courier New", monospace;
+    font-size: 12px;
+    color: #646970;
+    white-space: nowrap;
+}
+
+.cy-log-ip {
+    font-family: "Courier New", monospace;
+    font-size: 12px;
+    color: #646970;
+    white-space: nowrap;
+}
+
+.cy-log-source {
+    font-size: 12px;
+    color: #3c434a;
+    white-space: nowrap;
+}
+
+/* Column widths */
+.cy-log-col-time    { width: 150px; }
+.cy-log-col-type    { width: 120px; }
+.cy-log-col-source  { width: 130px; }
+.cy-log-col-message { min-width: 280px; }
+.cy-log-col-ip      { width: 130px; }
+
+/* Context details */
+.cy-log-context {
+    margin-top: 5px;
+}
+
+.cy-log-context summary {
+    cursor: pointer;
+    font-size: 11px;
+    color: #646970;
+    user-select: none;
+}
+
+.cy-log-context pre {
+    margin: 4px 0 0;
+    padding: 8px;
+    background: #f6f7f7;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 11px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #3c434a;
+}
+
+/* Empty state */
+.cy-logs-empty {
+    text-align: center;
+    padding: 48px 24px;
+    color: #646970;
+}
+
+.cy-logs-empty .dashicons {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    display: block;
+    margin: 0 auto 12px;
+    color: #c9c9c9;
+}
+
+.cy-logs-note {
+    font-size: 12px;
+    color: #646970;
+    margin-top: 10px;
+}
+
+/* Docs */
+.cy-docs h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #1d2327;
+}
+
+.cy-docs-block {
+    background: #f8f9fa;
+    border: 1px solid #e8e8e8;
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+}
+
+.cy-docs-block ol,
+.cy-docs-block ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.cy-docs-block li {
+    margin-bottom: 8px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #3c434a;
+}
+
+.cy-docs-block a {
+    color: #2271b1;
+}
+
+.cy-docs-link {
+    display: inline-block;
+    background: #2271b1;
+    color: #fff !important;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 6px;
+    transition: background 0.15s;
+}
+
+.cy-docs-link:hover {
+    background: #135e96;
+    color: #fff !important;
+}
+
+.cy-docs-list {
+    list-style: none;
+    padding: 0;
+}
+
+.cy-docs-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.cy-docs-list li:last-child {
+    border-bottom: none;
+}
+
+.cy-code {
+    display: inline-block;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    color: #c0392b;
+    margin: 6px 0;
+}
+
+.cy-faq {
+    margin: 0;
+}
+
+.cy-faq dt {
+    font-weight: 600;
+    font-size: 13px;
+    color: #1d2327;
+    margin-top: 12px;
+    margin-bottom: 3px;
+}
+
+.cy-faq dd {
+    margin: 0;
+    font-size: 13px;
+    color: #646970;
+    line-height: 1.6;
+}
+
+.cy-docs-block--links ul {
+    list-style: disc;
+}
+
+.cy-docs-block--links li {
+    font-size: 13px;
+}
