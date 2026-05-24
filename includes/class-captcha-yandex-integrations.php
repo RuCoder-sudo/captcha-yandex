@@ -22,7 +22,6 @@ class Captcha_Yandex_Integrations {
         $this->options = get_option( 'captcha_yandex_settings', array() );
 
         if ( ! $this->is_configured() ) {
-            Captcha_Yandex_Logger::warning( 'integrations', 'Ключи не настроены — интеграции не активированы.' );
             return;
         }
 
@@ -47,25 +46,21 @@ class Captcha_Yandex_Integrations {
         if ( $this->opt( 'on_comments' ) ) {
             add_filter( 'comment_form_submit_button', array( $this, 'comments_add_widget' ), 10, 2 );
             add_filter( 'preprocess_comment', array( $this, 'comments_verify' ) );
-            Captcha_Yandex_Logger::info( 'init', 'Интеграция активирована: Форма комментариев.' );
         }
 
         if ( $this->opt( 'on_login' ) ) {
             add_action( 'login_form', array( $this, 'login_add_widget' ) );
             add_filter( 'authenticate', array( $this, 'login_verify' ), 30, 3 );
-            Captcha_Yandex_Logger::info( 'init', 'Интеграция активирована: Форма авторизации.' );
         }
 
         if ( $this->opt( 'on_register' ) ) {
             add_action( 'register_form', array( $this, 'login_add_widget' ) );
             add_filter( 'registration_errors', array( $this, 'register_verify' ), 10, 3 );
-            Captcha_Yandex_Logger::info( 'init', 'Интеграция активирована: Форма регистрации.' );
         }
 
         if ( $this->opt( 'on_lostpassword' ) ) {
             add_action( 'lostpassword_form', array( $this, 'login_add_widget' ) );
             add_action( 'lostpassword_post', array( $this, 'lostpassword_verify' ), 10, 1 );
-            Captcha_Yandex_Logger::info( 'init', 'Интеграция активирована: Восстановление пароля.' );
         }
     }
 
@@ -135,7 +130,6 @@ class Captcha_Yandex_Integrations {
         }
 
         if ( ! class_exists( 'WPCF7' ) ) {
-            Captcha_Yandex_Logger::warning( 'cf7', 'CF7 не найден — интеграция пропущена.' );
             return;
         }
 
@@ -143,8 +137,6 @@ class Captcha_Yandex_Integrations {
         add_filter( 'wpcf7_validate_yandex-captcha',  array( $this, 'cf7_validate_tag' ), 10, 2 );
         add_filter( 'wpcf7_validate_yandex-captcha*', array( $this, 'cf7_validate_tag' ), 10, 2 );
         add_action( 'wpcf7_before_send_mail', array( $this, 'cf7_validate_submission' ) );
-
-        Captcha_Yandex_Logger::info( 'init', 'Интеграция активирована: Contact Form 7.' );
     }
 
     public function cf7_add_tag() {
@@ -197,14 +189,11 @@ class Captcha_Yandex_Integrations {
         $elementor_active = defined( 'ELEMENTOR_PRO_VERSION' ) || class_exists( 'ElementorPro\Plugin' );
 
         if ( ! $elementor_active ) {
-            Captcha_Yandex_Logger::warning( 'elementor', 'Elementor Pro не найден — интеграция пропущена. Требуется Elementor Pro для поддержки форм.' );
             return;
         }
 
         add_action( 'elementor_pro/forms/validation', array( $this, 'elementor_validate' ), 10, 2 );
         add_action( 'wp_footer', array( $this, 'elementor_inject_template' ) );
-
-        Captcha_Yandex_Logger::info( 'init', 'Интеграция активирована: Elementor Forms (JS-инъекция).' );
     }
 
     /**
@@ -238,63 +227,75 @@ class Captcha_Yandex_Integrations {
             return;
         }
 
-        $invisible_attr = $invisible ? ' data-invisible="true"' : '';
+        $invisible_opt = $invisible ? 'true' : 'false';
         ?>
-        <div id="cy-elementor-template" style="display:none;">
-            <div class="cy-captcha-container" style="margin:12px 0;">
-                <div class="smart-captcha cy-widget"
-                     data-sitekey="<?php echo $client_key; ?>"
-                     data-language="<?php echo $language; ?>"
-                     data-callback="onCaptchaYandexSuccess"
-                     <?php echo $invisible_attr; ?>></div>
-                <input type="hidden" name="smart-token" value="">
-            </div>
-        </div>
         <script>
         (function () {
-            function cyInjectElementorForms() {
-                var template = document.getElementById('cy-elementor-template');
-                if (!template) return;
+            var CY_KEY      = '<?php echo $client_key; ?>';
+            var CY_LANG     = '<?php echo $language; ?>';
+            var CY_INVIS    = <?php echo $invisible_opt; ?>;
 
+            /*
+             * onCaptchaYandexSuccess — Яндекс вызывает этот callback и сам пишет
+             * токен в input[data-testid="smart-token"] внутри виджета.
+             * Мы дополнительно копируем токен во ВСЕ остальные
+             * input[name="smart-token"] формы (на случай нескольких форм).
+             */
+            window.onCaptchaYandexSuccess = function (token) {
+                document.querySelectorAll('input[name="smart-token"]').forEach(function (el) {
+                    el.value = token;
+                });
+            };
+
+            function cyRenderWidget(widgetDiv) {
+                if ( widgetDiv.dataset.cyInited ) return;
+                widgetDiv.dataset.cyInited = '1';
+
+                var opts = {
+                    sitekey:  CY_KEY,
+                    callback: window.onCaptchaYandexSuccess,
+                    language: CY_LANG,
+                };
+                if (CY_INVIS) opts.invisible = true;
+
+                window.smartCaptcha.render(widgetDiv, opts);
+            }
+
+            function cyInjectElementorForms() {
                 var forms = document.querySelectorAll('.elementor-widget-form form.elementor-form');
                 forms.forEach(function (form, idx) {
                     if (form.querySelector('.cy-captcha-container')) return;
 
-                    var clone = template.firstElementChild.cloneNode(true);
+                    /* Создаём контейнер */
+                    var container  = document.createElement('div');
+                    container.className = 'cy-captcha-container';
 
-                    var containerIdSuffix = 'elementor-' + idx + '-' + Math.random().toString(36).substr(2,5);
-                    var widgetDiv = clone.querySelector('.smart-captcha');
-                    if (widgetDiv) {
-                        widgetDiv.id = 'cy-widget-' + containerIdSuffix;
-                    }
-                    var tokenInput = clone.querySelector('input[name="smart-token"]');
-                    if (tokenInput) {
-                        tokenInput.id = 'smart-token-' + containerIdSuffix;
-                    }
+                    /* Виджет-div — именно в него Яндекс рендерит iframes */
+                    var widgetDiv = document.createElement('div');
+                    widgetDiv.className   = 'smart-captcha cy-widget';
+                    widgetDiv.id          = 'cy-widget-el-' + idx + '-' + Math.random().toString(36).substr(2,5);
+                    widgetDiv.setAttribute('data-sitekey', CY_KEY);
+                    widgetDiv.setAttribute('data-language', CY_LANG);
+                    widgetDiv.setAttribute('data-callback', 'onCaptchaYandexSuccess');
+                    if (CY_INVIS) widgetDiv.setAttribute('data-invisible', 'true');
+
+                    container.appendChild(widgetDiv);
 
                     var submitGroup = form.querySelector('.elementor-field-type-submit');
                     if (submitGroup) {
-                        submitGroup.parentNode.insertBefore(clone, submitGroup);
+                        submitGroup.parentNode.insertBefore(container, submitGroup);
                     } else {
-                        form.appendChild(clone);
+                        form.appendChild(container);
                     }
 
-                    if (typeof window.smartCaptcha !== 'undefined' && widgetDiv) {
-                        var renderOpts = {
-                            sitekey: '<?php echo $client_key; ?>',
-                            callback: window.onCaptchaYandexSuccess,
-                            language: '<?php echo $language; ?>',
-                        };
-                        <?php if ( $invisible ) : ?>
-                        renderOpts.invisible = true;
-                        <?php endif; ?>
-                        window.smartCaptcha.render(widgetDiv, renderOpts);
-                        if (widgetDiv) widgetDiv.dataset.cyInited = '1';
+                    /* Рендерим если API уже загружен, иначе ждём */
+                    if (typeof window.smartCaptcha !== 'undefined') {
+                        cyRenderWidget(widgetDiv);
                     }
                 });
             }
 
-            function waitForSmartCaptchaAndInject() {
+            function waitAndInject() {
                 if (typeof window.smartCaptcha !== 'undefined') {
                     cyInjectElementorForms();
                 } else {
@@ -304,18 +305,31 @@ class Captcha_Yandex_Integrations {
                             cyInjectElementorForms();
                         }
                     }, 150);
-                    setTimeout(function () { clearInterval(t); }, 12000);
+                    setTimeout(function () { clearInterval(t); }, 15000);
                 }
             }
 
             if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', waitForSmartCaptchaAndInject);
+                document.addEventListener('DOMContentLoaded', waitAndInject);
             } else {
-                waitForSmartCaptchaAndInject();
+                waitAndInject();
             }
 
+            /* Elementor popups */
             document.addEventListener('elementor/popup/show', function () {
-                setTimeout(waitForSmartCaptchaAndInject, 200);
+                setTimeout(waitAndInject, 300);
+            });
+
+            /* После успешной отправки CF7 — сброс токенов */
+            document.addEventListener('wpcf7mailsent', function () {
+                document.querySelectorAll('input[name="smart-token"]').forEach(function (el) {
+                    el.value = '';
+                });
+                document.querySelectorAll('.smart-captcha[data-cy-inited]').forEach(function (w) {
+                    if (typeof window.smartCaptcha !== 'undefined') {
+                        window.smartCaptcha.reset(w);
+                    }
+                });
             });
         })();
         </script>
