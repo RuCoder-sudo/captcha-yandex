@@ -3,7 +3,7 @@
  * Plugin Name: Wp captcha yandex 
  * Plugin URI: https://github.com/RuCoder-sudo/captcha-yandex
  * Description: Яндекс-капча защищает вас от спама и других видов автоматических злоупотреблений. С помощью модуля интеграции Яндекс-капчи вы можете блокировать отправку форм спам-ботами.
- * Version: 1.1.0
+ * Version: 1.0.2
  * Author: RuCoder
  * Author URI: https://рукодер.рф
  * License: GPL v2 or later
@@ -14,12 +14,11 @@
  * Requires PHP: 7.4
  */
 
-
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'CY_VERSION', '1.1.0' );
+define( 'CY_VERSION', '1.0.2' );
 define( 'CY_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CY_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'CY_PLUGIN_FILE', __FILE__ );
