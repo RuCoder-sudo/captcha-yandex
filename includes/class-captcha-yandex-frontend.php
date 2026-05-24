@@ -19,6 +19,46 @@ class Captcha_Yandex_Frontend {
         add_shortcode( 'yandex_captcha', array( $this, 'render_shortcode' ) );
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_script' ) );
         add_action( 'login_enqueue_scripts', array( $this, 'enqueue_script' ) );
+
+        /* ---------- WP Rocket совместимость ----------
+         * Исключаем скрипт Яндекса и наш frontend.js из любой обработки
+         * WP Rocket (минификация, объединение, задержка, lazyload iframes).
+         * Без этих исключений WP Rocket скачивает captcha.js локально и
+         * ломает внутренние URL iframe-ов → вместо капчи показывается сайт.
+         */
+        add_filter( 'rocket_exclude_js',               array( $this, 'rocket_exclude_js' ) );
+        add_filter( 'rocket_delay_js_exclusions',      array( $this, 'rocket_delay_js_exclusions' ) );
+        add_filter( 'rocket_minify_excluded_external_js', array( $this, 'rocket_exclude_js' ) );
+        add_filter( 'rocket_exclude_async_css',        '__return_false' );
+        add_filter( 'rocket_lazyload_excluded_src',    array( $this, 'rocket_lazyload_excluded_src' ) );
+    }
+
+    /**
+     * Исключаем Яндекс-капчу и наш скрипт из минификации/объединения WP Rocket.
+     */
+    public function rocket_exclude_js( $excluded ) {
+        $excluded[] = 'smartcaptcha.yandexcloud.net';
+        $excluded[] = 'captcha-yandex/assets/js/frontend.js';
+        return $excluded;
+    }
+
+    /**
+     * Исключаем Яндекс-капчу и наш скрипт из задержки JS WP Rocket.
+     * Паттерны — это части URL (строки, не regex).
+     */
+    public function rocket_delay_js_exclusions( $excluded ) {
+        $excluded[] = 'smartcaptcha\.yandexcloud\.net';
+        $excluded[] = 'captcha-yandex\/assets\/js\/frontend\.js';
+        return $excluded;
+    }
+
+    /**
+     * Исключаем iframes Яндекс-капчи из lazyload WP Rocket.
+     * (captcha.js создаёт iframes динамически, lazyload их ломает)
+     */
+    public function rocket_lazyload_excluded_src( $excluded ) {
+        $excluded[] = 'smartcaptcha.yandexcloud.net';
+        return $excluded;
     }
 
     private function get_options() {
@@ -98,8 +138,9 @@ class Captcha_Yandex_Frontend {
             $html .= 'data-invisible="true" ';
         }
         $html .= '></div>';
-        $html .= '<input type="hidden" name="smart-token" id="smart-token-' . esc_attr( $container_id ) . '">';
         $html .= '</div>';
+        /* Примечание: Яндекс сам создаёт input[name="smart-token"] внутри виджета.
+         * Дополнительный hidden-input не нужен и вызывает конфликт в $_POST. */
 
         return $html;
     }
