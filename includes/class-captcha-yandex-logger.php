@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Captcha_Yandex_Logger {
 
     const OPTION_KEY = 'captcha_yandex_logs';
-    const MAX_LOGS   = 200;
+    const MAX_LOGS   = 1000;
 
     const TYPE_INFO    = 'info';
     const TYPE_SUCCESS = 'success';
