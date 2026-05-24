@@ -6,33 +6,40 @@
     var isInvisible = config.invisible || false;
     var language = config.language || 'ru';
 
-    function onCaptchaYandexSuccess(token) {
-        var inputs = document.querySelectorAll('input[name="smart-token"]');
-        inputs.forEach(function (input) {
-            input.value = token;
-        });
+    /*
+     * onCaptchaYandexSuccess — определяется один раз глобально.
+     * Для Elementor его переопределяет elementor_inject_template (в integrations.php).
+     * Здесь — для wp-login, комментариев, CF7.
+     */
+    if (typeof window.onCaptchaYandexSuccess === 'undefined') {
+        window.onCaptchaYandexSuccess = function (token) {
+            document.querySelectorAll('input[name="smart-token"]').forEach(function (input) {
+                input.value = token;
+            });
+        };
     }
 
-    window.onCaptchaYandexSuccess = onCaptchaYandexSuccess;
-
-    function initWidgets() {
+    /*
+     * Инициализация виджетов для НЕ-Elementor форм:
+     * wp-login, форма комментариев, CF7 (если тег [yandex-captcha] вставлен вручную).
+     * Elementor-формы инициализируются отдельно через elementor_inject_template.
+     */
+    function initStaticWidgets() {
         if (typeof window.smartCaptcha === 'undefined') {
             return;
         }
 
-        var containers = document.querySelectorAll('.smart-captcha[data-sitekey]');
+        var containers = document.querySelectorAll(
+            '.smart-captcha[data-sitekey]:not([data-cy-inited]):not(.cy-widget)'
+        );
         containers.forEach(function (container) {
-            if (container.dataset.cyInited) {
-                return;
-            }
             container.dataset.cyInited = '1';
 
             var opts = {
-                sitekey: clientKey || container.dataset.sitekey,
-                callback: onCaptchaYandexSuccess,
+                sitekey:  clientKey || container.dataset.sitekey,
+                callback: window.onCaptchaYandexSuccess,
                 language: language || container.dataset.language || 'ru',
             };
-
             if (isInvisible || container.dataset.invisible === 'true') {
                 opts.invisible = true;
             }
@@ -41,28 +48,34 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        var scriptInterval = setInterval(function () {
+    function waitForApiAndInit() {
+        if (typeof window.smartCaptcha !== 'undefined') {
+            initStaticWidgets();
+            return;
+        }
+        var t = setInterval(function () {
             if (typeof window.smartCaptcha !== 'undefined') {
-                clearInterval(scriptInterval);
-                initWidgets();
+                clearInterval(t);
+                initStaticWidgets();
             }
         }, 100);
+        setTimeout(function () { clearInterval(t); }, 10000);
+    }
 
-        setTimeout(function () {
-            clearInterval(scriptInterval);
-        }, 10000);
-    });
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', waitForApiAndInit);
+    } else {
+        waitForApiAndInit();
+    }
 
+    /* Сброс токена после успешной отправки CF7 */
     document.addEventListener('wpcf7mailsent', function () {
-        var inputs = document.querySelectorAll('input[name="smart-token"]');
-        inputs.forEach(function (input) {
-            input.value = '';
+        document.querySelectorAll('input[name="smart-token"]').forEach(function (el) {
+            el.value = '';
         });
-        var widgets = document.querySelectorAll('.smart-captcha[data-cy-inited]');
-        widgets.forEach(function (widget) {
+        document.querySelectorAll('.smart-captcha[data-cy-inited]').forEach(function (w) {
             if (typeof window.smartCaptcha !== 'undefined') {
-                window.smartCaptcha.reset(widget);
+                window.smartCaptcha.reset(w);
             }
         });
     });
